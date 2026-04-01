@@ -1,4 +1,5 @@
 name: Descargar Google Trends diario
+
 on:
   schedule:
     - cron: '0 13 * * *'
@@ -14,7 +15,6 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Instalar Python
@@ -23,32 +23,36 @@ jobs:
           python-version: '3.11'
 
       - name: Instalar dependencias
-        run: pip install pytrends pandas matplotlib openpyxl
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytrends pandas matplotlib openpyxl
 
       - name: Ejecutar script
         run: python script_gt.py
 
       - name: Verificar archivo generado
         run: |
-          echo "=== Contenido de output/ ==="
-          ls -la output/ || echo "Carpeta output no existe"
-          echo "=== Archivos xlsx en todo el repo ==="
-          find . -name "*.xlsx" -not -path './.git/*'
-
-      -       - name: Guardar en repositorio
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
           echo "=== Rama actual ==="
           git branch --show-current
+          echo "=== Carpeta output ==="
+          ls -la output/ || echo "No existe output"
+          echo "=== Excels encontrados ==="
+          find . -name "*.xlsx" -not -path './.git/*'
+          echo "=== Git status antes del add ==="
+          git status
+
+      - name: Guardar en repositorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add output/*.xlsx
 
           echo "=== Archivos staged ==="
           git diff --cached --name-only
 
-          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios"
+          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios para commit"
+
           git push
 
       - name: Subir artifact
