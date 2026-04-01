@@ -34,7 +34,7 @@ for geo, info in country_terms.items():
     print(f"Descargando datos para {geo} — término: {keyword}")
     df = get_trends(keyword, geo, hl, tz)
 
-    today = pd.Timestamp.today().date()
+    today = pd.Timestamp.today().strftime("%Y-%m-%d")
     filename = output_dir / f"DatosGT_{geo}_{today}.xlsx"
 
     df.to_excel(filename, index=False)
