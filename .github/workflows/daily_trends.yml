@@ -1,5 +1,4 @@
 name: Descargar Google Trends diario
-
 on:
   schedule:
     - cron: '0 13 * * *'
@@ -8,13 +7,15 @@ on:
 jobs:
   run-script:
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Instalar Python
         uses: actions/setup-python@v5
@@ -29,28 +30,34 @@ jobs:
       - name: Ejecutar script
         run: python script_gt.py
 
-      - name: Revisar archivos generados
+      - name: Diagnóstico completo
         run: |
-          echo "Ruta actual:"
+          echo "=== Directorio actual ==="
           pwd
-          echo "Archivos en el repo:"
-          find . -maxdepth 3 -type f
-          echo "Git status antes del add:"
-          git status --ignored
+          echo "=== Todo el contenido del repo ==="
+          find . -not -path './.git/*' -type f
+          echo "=== Carpeta output ==="
+          ls -la output/ || echo "OUTPUT NO EXISTE"
+          echo "=== Git status ==="
+          git status
+          echo "=== Git log últimos commits ==="
+          git log --oneline -5
 
-      - name: Guardar archivo generado en el repo
+      - name: Guardar en repo
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          echo "=== Después del add ==="
           git status
-          ls -la output/
-          git add output/*.xlsx
-          git status
+          echo "=== Archivos en staging ==="
+          git diff --cached --name-only
           git commit -m "Actualizar datos Google Trends" || echo "Sin cambios para commit"
           git push origin HEAD:main
+          echo "=== Push completado ==="
 
       - name: Subir artifact
         uses: actions/upload-artifact@v4
         with:
           name: google-trends-files
-          path: "output/*.xlsx"
+          path: output/*.xlsx
