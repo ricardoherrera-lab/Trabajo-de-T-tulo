@@ -1,0 +1,31 @@
+name: Descargar Google Trends diario
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar librerías
+        run: pip install pytrends pandas matplotlib openpyxl
+
+      - name: Ejecutar script
+        run: python script_gt.py
+
+      - name: Guardar archivos generados
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-trends-files
+          path: "*.xlsx"
