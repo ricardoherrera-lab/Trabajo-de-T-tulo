@@ -29,11 +29,22 @@ jobs:
       - name: Ejecutar script
         run: python script_gt.py
 
+      - name: Revisar archivos generados
+        run: |
+          echo "Ruta actual:"
+          pwd
+          echo "Archivos en el repo:"
+          find . -maxdepth 3 -type f
+          echo "Git status antes del add:"
+          git status --ignored
+
       - name: Guardar archivo generado en el repo
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
+          echo "Git status después del add:"
+          git status
           git commit -m "Actualizar datos Google Trends" || echo "Sin cambios para commit"
           git push
 
@@ -41,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: google-trends-files
-          path: "*.xlsx"
+          path: "output/*.xlsx"
