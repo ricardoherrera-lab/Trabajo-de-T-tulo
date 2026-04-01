@@ -23,10 +23,6 @@ def get_trends(keyword, geo, hl, tz, timeframe=timeframe):
     data.columns = ["date", "value"]
     return data
 
-# carpeta dentro del repo
-output_dir = Path("output")
-output_dir.mkdir(exist_ok=True)
-
 output_dir = Path("output")
 output_dir.mkdir(exist_ok=True)
 
@@ -34,11 +30,16 @@ for geo, info in country_terms.items():
     keyword = info["kw"]
     hl = info["hl"]
     tz = info["tz"]
+
     print(f"Descargando datos para {geo} — término: {keyword}")
     df = get_trends(keyword, geo, hl, tz)
+
     today = pd.Timestamp.today().date()
     filename = output_dir / f"DatosGT_{geo}_{today}.xlsx"
+
     df.to_excel(filename, index=False)
-    print(f"Archivo guardado en: {filename}")          # sin .resolve()
-    print(f"Existe el archivo: {filename.exists()}")   # confirma que existe
+
+    print(f"Archivo guardado en: {filename}")
+    print(f"Existe el archivo: {filename.exists()}")
+
     time.sleep(20)
