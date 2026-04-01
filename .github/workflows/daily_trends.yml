@@ -23,38 +23,26 @@ jobs:
           python-version: '3.11'
 
       - name: Instalar dependencias
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytrends pandas matplotlib openpyxl
+        run: pip install pytrends pandas matplotlib openpyxl
 
       - name: Ejecutar script
         run: python script_gt.py
 
-      - name: Diagnóstico completo
+      - name: Verificar archivo generado
         run: |
-          echo "=== Directorio actual ==="
-          pwd
-          echo "=== Todo el contenido del repo ==="
-          find . -not -path './.git/*' -type f
-          echo "=== Carpeta output ==="
-          ls -la output/ || echo "OUTPUT NO EXISTE"
-          echo "=== Git status ==="
-          git status
-          echo "=== Git log últimos commits ==="
-          git log --oneline -5
+          echo "=== Contenido de output/ ==="
+          ls -la output/ || echo "Carpeta output no existe"
+          echo "=== Archivos xlsx en todo el repo ==="
+          find . -name "*.xlsx" -not -path './.git/*'
 
-      - name: Guardar en repo
+      - name: Guardar en repositorio
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add output/
-          echo "=== Después del add ==="
-          git status
-          echo "=== Archivos en staging ==="
           git diff --cached --name-only
-          git commit -m "Actualizar datos Google Trends" || echo "Sin cambios para commit"
-          git push origin HEAD:main
-          echo "=== Push completado ==="
+          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios"
+          git push origin main
 
       - name: Subir artifact
         uses: actions/upload-artifact@v4
