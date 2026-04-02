@@ -6,7 +6,7 @@ from pytrends.request import TrendReq
 import time
 
 country_terms = {
-    "CL": {"kw": "Bolsa de valores", "hl": "es-CL", "tz": -180},
+    "CL": {"kw": "Bolsa de valores", "hl": "es-CL", "tz": 180},
 }
 
 timeframe = "2020-11-22 2025-11-09"
