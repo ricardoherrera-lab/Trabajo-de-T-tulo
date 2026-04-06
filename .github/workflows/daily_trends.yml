@@ -27,8 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytrends pandas matplotlib openpyxl
 
-      - name: Ejecutar script
+      - name: Ejecutar script 1
         run: python script_gt.py
+
+      - name: Ejecutar script 2
+        run: python script_gt_2.py
 
       - name: Verificar archivo generado
         run: |
