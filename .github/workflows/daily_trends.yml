@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-script:
+  run-scripts:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
@@ -16,6 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
 
       - name: Instalar Python
         uses: actions/setup-python@v5
@@ -27,39 +29,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytrends pandas matplotlib openpyxl
 
+      # 🔹 Script 1
       - name: Ejecutar script 1
         run: python script_gt.py
 
+      # 🔹 Script 2
       - name: Ejecutar script 2
-        run: python script_gt_2.py
+        run: python script_otro.py
 
-      - name: Verificar archivo generado
+      - name: Verificar archivos generados
         run: |
-          echo "=== Rama actual ==="
-          git branch --show-current
           echo "=== Carpeta output ==="
           ls -la output/ || echo "No existe output"
           echo "=== Excels encontrados ==="
           find . -name "*.xlsx" -not -path './.git/*'
-          echo "=== Git status antes del add ==="
+          echo "=== Git status ==="
           git status
 
-  
       - name: Guardar en repositorio
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # 🔥 TRAE CAMBIOS REMOTOS (clave para evitar error)
+          git pull --rebase origin main
+
+          # 🔥 AGREGA SOLO LOS EXCEL
           git add output/*.xlsx
 
           echo "=== Archivos staged ==="
           git diff --cached --name-only
 
-          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios para commit"
+          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios"
 
-          git pull --rebase origin main
           git push origin main
-          
+
       - name: Subir artifact
         uses: actions/upload-artifact@v4
         with:
