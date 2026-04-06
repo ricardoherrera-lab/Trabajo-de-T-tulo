@@ -5,6 +5,10 @@ on:
     - cron: '0 13 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: google-trends
+  cancel-in-progress: false
+
 jobs:
   run-scripts:
     runs-on: ubuntu-latest
@@ -29,13 +33,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytrends pandas matplotlib openpyxl
 
-      # 🔹 Script 1
+      - name: Crear carpeta output
+        run: mkdir -p output
+
       - name: Ejecutar script 1
         run: python script_gt.py
 
-      # 🔹 Script 2
       - name: Ejecutar script 2
-        run: python script_otro.py
+        run: python script_gt_2.py
 
       - name: Verificar archivos generados
         run: |
@@ -51,18 +56,20 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 🔥 TRAE CAMBIOS REMOTOS (clave para evitar error)
-          git pull --rebase origin main
-
-          # 🔥 AGREGA SOLO LOS EXCEL
           git add output/*.xlsx
 
           echo "=== Archivos staged ==="
           git diff --cached --name-only
 
-          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios"
+          git commit -m "Datos Google Trends $(date +'%Y-%m-%d')" || echo "Sin cambios para commit"
 
-          git push origin main
+          git pull --rebase origin main || echo "Rebase falló o no era necesario"
+
+          git push origin main || (
+            echo "Primer push falló, reintentando..."
+            git pull --rebase origin main
+            git push origin main
+          )
 
       - name: Subir artifact
         uses: actions/upload-artifact@v4
