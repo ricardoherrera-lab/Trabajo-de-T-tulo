@@ -16,7 +16,7 @@ import time
 
 country_terms = {
     "CL": {"kw": "Bolsa de valores", "hl": "es-CL", "tz": -180},
-    "CO": {"kw": "COLCAP", "hl": "es-CO", "tz": -300},
+    "CO": {"kw": "Bolsa de valores", "hl": "es-CO", "tz": -300},
     "PE": {"kw": "Bolsa de valores", "hl": "es-PE", "tz": -300},
     "MX": {"kw": "Bolsa de valores", "hl": "es-MX", "tz": -360},
 }
