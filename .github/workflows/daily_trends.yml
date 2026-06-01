@@ -36,11 +36,14 @@ jobs:
       - name: Crear carpeta output
         run: mkdir -p output
 
-      - name: Ejecutar script 1
-        run: python script_gt.py
+      #- name: Ejecutar script 1
+      #  run: python script_gt.py
 
-      - name: Ejecutar script 2
-        run: python script_gt_2.py
+      #- name: Ejecutar script 2
+      #  run: python script_gt_2.py
+
+      - name: Ejecutar script 3
+        run: python script_gt_3.py
 
       - name: Verificar archivos generados
         run: |
