@@ -87,6 +87,10 @@ for country, keywords in keywords_by_country.items():
 
                 output_file = output_folder / f"DatosGT_{country}_{keyword_clean}_bloque{bloque_i}_{today}.xlsx"
                 df.to_excel(output_file, index=False)
+                
+                print(f"✅ Guardado: {output_file.resolve()}")
+                print(f"📦 Existe archivo?: {output_file.exists()}")
+                print(f"📏 Tamaño bytes: {output_file.stat().st_size if output_file.exists() else 0}")
 
                 print(f"✅ Guardado: {output_file}")
 
